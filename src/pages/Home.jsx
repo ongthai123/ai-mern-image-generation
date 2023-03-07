@@ -15,6 +15,49 @@ function Home() {
   const [loading, setLoading] = useState(false);
   const [allPost, setAllPost] = useState(null);
   const [searchText, setSearchText] = useState("");
+  const [searchTimeout, setSearchTimeout] = useState(null);
+  const [searchResults, setSearchResults] = useState(null);
+
+  const fetchPosts = async () => {
+    setLoading(true);
+
+    try {
+      const response = await fetch('https://dalle-arbb.onrender.com/api/v1/post', {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+      })
+
+      if (response.ok) {
+        const result = await response.json();
+
+        setAllPost(response.data.reverse());
+      }
+
+    } catch (err) {
+      alert(err)
+    }
+    finally {
+      setLoading(false);
+    }
+  }
+
+  useEffect(() => {
+    fetchPosts();
+  }, [])
+
+  const handleSearchChange = (e) => {
+    clearTimeout(searchTimeout);
+    setSearchText(e.target.value);
+
+    setSearchTimeout(
+      setTimeout(() => {
+        const searchResult = allPost.filter((item) => item.name.toLowerCase().includes(searchText.toLowerCase()) || item.prompt.toLowerCase().includes(searchText.toLowerCase()))
+
+        setSearchResults(searchResult);
+      }, 500));
+  }
 
   return (
     <section className='max-w-7x1 mx-auto'>
@@ -24,7 +67,14 @@ function Home() {
       </div>
 
       <div className='mt-16'>
-        <FormField />
+        <FormField
+          labelName="Search posts"
+          type='text'
+          name='text'
+          placeholder='Search something...'
+          value={searchText}
+          handleChange={handleSearchChange}
+        />
       </div>
 
       <div className='mt-10'>
@@ -43,14 +93,14 @@ function Home() {
             <div className='grid lg:grid-cols-4 sm:grid-cols-3 xs:grid-cols-2 grid-cols-1 gap-3'>
               {searchText ? (
                 <RenderCards
-                  data={[]}
+                  data={searchResults}
                   title="No search results found"
                 />
               )
                 :
                 (
                   <RenderCards
-                    data={[]}
+                    data={allPost}
                     title="No post found"
                   />
                 )}
