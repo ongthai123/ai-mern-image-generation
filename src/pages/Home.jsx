@@ -3,7 +3,7 @@ import { Card, FormField, Loader } from '../components';
 
 const RenderCards = ({ data, title }) => {
   if (data?.length > 0) {
-    return data.map((post) => <Card key={post._id} {...post} />)
+    return data.map((post) => <Card key={post.id} {...post} />)
   }
 
   return (
@@ -22,7 +22,7 @@ function Home() {
     setLoading(true);
 
     try {
-      const response = await fetch('https://dalle-arbb.onrender.com/api/v1/post', {
+      const response = await fetch('https://localhost:7277/api/posts', {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json'
@@ -32,7 +32,9 @@ function Home() {
       if (response.ok) {
         const result = await response.json();
 
-        setAllPost(response.data.reverse());
+        setAllPost(result);
+
+        console.log("Result: " + result);
       }
 
     } catch (err) {

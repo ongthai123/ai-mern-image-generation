@@ -10,7 +10,7 @@ function CreatePost() {
   const [form, setForm] = useState({
     name: '',
     prompt: '',
-    photo: ''
+    photoUrl: ''
   });
   const [generatingImg, setGeneratingImg] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -30,19 +30,21 @@ function CreatePost() {
       try {
         setGeneratingImg(true);
 
-        const response = await fetch('https://dalle-arbb.onrender.com/api/v1/dalle', {
+        const response = await fetch('https://localhost:7277/api/Posts', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json'
           },
           body: JSON.stringify({
-            prompt: form.prompt
+            ...form
           })
         })
 
         const data = await response.json();
 
-        setForm({ ...form, photo: `data:image/jpeg;base64,${data.photo}` })
+        console.log(data);
+
+        setForm({ ...form, photoUrl: data.photoUrl })
 
       } catch (err) {
         alert(err);
@@ -57,7 +59,7 @@ function CreatePost() {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (form.prompt && form.photo) {
+    if (form.prompt && form.photoUrl) {
       setLoading(true);
 
       try {
@@ -114,9 +116,9 @@ function CreatePost() {
           />
 
           <div className="relative bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 w-64 p-3 h-64 flex justify-center items-center">
-            {form.photo ? (
+            {form.photoUrl ? (
               <img
-                src={form.photo}
+                src={form.photoUrl}
                 alt={form.prompt}
                 className='w-full h-full object-contain'
               />
