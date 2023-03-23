@@ -1,4 +1,4 @@
-# ai-mern-image-generation
+# OpenAI-image-generation
 Build a Full Stack AI Image Generation App using
 
 - OpenAI, 
